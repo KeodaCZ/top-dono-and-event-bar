@@ -66,40 +66,9 @@ const client = new StreamerbotClient({
 	}
 });
 
-
-
-
-
-
-
-
-
-
-
-
-///////////////////////////////////
-// STREAMER.BOT WEBSOCKET STATUS //
-///////////////////////////////////
-
-// This function sets the visibility of the Streamer.bot status label on the overlay
-	function SetConnectionStatus(connected) {
-	let statusContainer = document.getElementById("statusContainer");
-	if (connected) {
-		statusContainer.style.background = "#2FB774";
-		statusContainer.innerText = "Connected!";
-		statusContainer.style.opacity = 1;
-		setTimeout(() => {
-			statusContainer.style.transition = "all 2s ease";
-			statusContainer.style.opacity = 0;
-		}, 10);
-	}
-	else {
-		statusContainer.style.background = "#D12025";
-		statusContainer.innerText = "Connecting...";
-		statusContainer.style.transition = "";
-		statusContainer.style.opacity = 1;
-	}
-}
+///////////////
+// EVENT BAR //
+///////////////
 
 function calculateSliderTransform() {
 	if (!slider) return null;
@@ -144,15 +113,42 @@ function updateSliderAnimation() {
 	}
 }
 
+// Observe changes to the slider content and update animation accordingly
 const observer = new MutationObserver(() => {
 	updateSliderAnimation();
 });
 
+// Start observing the slider for changes in its child elements
 if (slider) {
 	observer.observe(slider, { childList: true, subtree: true });
 }
 
+// Update animation on window resize to recalculate transforms
 window.addEventListener('resize', () => {
 	updateSliderAnimation();
 });
+
+///////////////////////////////////
+// STREAMER.BOT WEBSOCKET STATUS //
+///////////////////////////////////
+
+// This function sets the visibility of the Streamer.bot status label on the overlay
+	function SetConnectionStatus(connected) {
+	let statusContainer = document.getElementById("statusContainer");
+	if (connected) {
+		statusContainer.style.background = "#2FB774";
+		statusContainer.innerText = "Connected!";
+		statusContainer.style.opacity = 1;
+		setTimeout(() => {
+			statusContainer.style.transition = "all 2s ease";
+			statusContainer.style.opacity = 0;
+		}, 10);
+	}
+	else {
+		statusContainer.style.background = "#D12025";
+		statusContainer.innerText = "Connecting...";
+		statusContainer.style.transition = "";
+		statusContainer.style.opacity = 1;
+	}
+}
 
