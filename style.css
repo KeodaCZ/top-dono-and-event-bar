@@ -86,13 +86,17 @@ html {
     justify-content: space-between;
     gap: 0;
     animation: slideLeft 15s linear infinite;
-    width: 100%;
+    min-width: 100%;
+    width: max-content;
 }
 
 .eventItem {
     flex: 1;
     position: relative;
     text-align: center;
+    padding-right: var(--margin);
+    padding-left: var(--margin);
+    min-width: 200px;
 }
 
 .eventItem:not(:last-child)::after {
@@ -106,15 +110,11 @@ html {
 
 @keyframes slideLeft {
     0% {
-        transform: translateX(100vw);
+        transform: translateX(var(--start-transform, 100%));
     }
     100% {
-        transform: translateX(-100%);
+        transform: translateX(var(--end-transform, -100%));
     }
-}
-
-.eventItem {
-    padding-right: var(--margin);
 }
 
 #topDonoLabel, #topDonoAmount, #topDonoName {

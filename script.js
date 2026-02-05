@@ -35,6 +35,7 @@ let events = ["test 100 bits", "test 25Kč", "test 10Kč"]; // array to hold rec
 //dom elements
 const horizontalContainer = document.getElementById('horizontalContainer');
 const verticalContainer = document.getElementById('verticalContainer');
+const slider = document.querySelector('.slider');
 
 //set mode
 if (mode === 'horizontal') {
@@ -42,6 +43,8 @@ if (mode === 'horizontal') {
 } else if (mode === 'vertical') {
     verticalContainer.style.display = 'flex';
 }
+
+updateSliderAnimation();
 
 /////////////////////////
 // STREAMER.BOT CLIENT //
@@ -79,7 +82,7 @@ const client = new StreamerbotClient({
 ///////////////////////////////////
 
 // This function sets the visibility of the Streamer.bot status label on the overlay
-function SetConnectionStatus(connected) {
+	function SetConnectionStatus(connected) {
 	let statusContainer = document.getElementById("statusContainer");
 	if (connected) {
 		statusContainer.style.background = "#2FB774";
@@ -97,3 +100,59 @@ function SetConnectionStatus(connected) {
 		statusContainer.style.opacity = 1;
 	}
 }
+
+function calculateSliderTransform() {
+	if (!slider) return null;
+	
+	const container = document.getElementById('verticalEventBar');
+	if (!container) return null;
+	
+	const containerWidth = container.offsetWidth;
+	const sliderWidth = slider.scrollWidth;
+	
+	if (sliderWidth <= containerWidth) {
+		return { start: '0%', end: '0%' };
+	}
+	
+	const endPercent = -(sliderWidth / containerWidth) * 100;
+	
+	return { start: '100%', end: `${endPercent}%` };
+}
+
+function updateSliderAnimation() {
+	if (!slider) return;
+	
+	const transform = calculateSliderTransform();
+	if (!transform) return;
+	
+	slider.style.setProperty('--start-transform', transform.start);
+	slider.style.setProperty('--end-transform', transform.end);
+	
+	const container = document.getElementById('verticalEventBar');
+	const containerWidth = container.offsetWidth;
+	const sliderWidth = slider.scrollWidth;
+	
+	if (sliderWidth > containerWidth) {
+		slider.style.animationPlayState = 'running';
+		const distanceToTravel = containerWidth + sliderWidth;
+		const pixelsPerSecond = 100;
+		const duration = distanceToTravel / pixelsPerSecond;
+		slider.style.animationDuration = `${duration}s`;
+	} else {
+		slider.style.animationPlayState = 'paused';
+		slider.style.transform = 'translateX(0)';
+	}
+}
+
+const observer = new MutationObserver(() => {
+	updateSliderAnimation();
+});
+
+if (slider) {
+	observer.observe(slider, { childList: true, subtree: true });
+}
+
+window.addEventListener('resize', () => {
+	updateSliderAnimation();
+});
+
