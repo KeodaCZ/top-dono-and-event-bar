@@ -1,0 +1,106 @@
+* {
+	margin: 0;
+	padding: 0;
+	--margin: 5px;
+	--border-radius: 0.5em;
+}
+
+body {
+	overflow: hidden;
+}
+
+html {
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+	color: white;
+	text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+	overflow-wrap: break-word;
+}
+
+#statusContainer {
+	font-weight: 500;
+	font-size: 30px;
+	text-align: center;
+	background-color: #D12025;
+	color: white;
+	padding: 10px;
+	border-radius: 10px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+#horizontalContainer {
+    display: none;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: var(--margin);
+    padding: var(--margin);
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+#verticalContainer {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--margin);
+    padding: var(--margin);
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+#topDonoBar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: var(--margin);
+    padding: var(--margin);
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: var(--border-radius);
+}
+
+#verticalEventBar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    overflow: hidden;
+    gap: var(--margin);
+    padding: var(--margin);
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: var(--border-radius);
+    width: 100%;
+    white-space: nowrap;
+}
+
+.slider {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--margin);
+    animation: slideLeft 15s linear infinite;
+}
+
+@keyframes slideLeft {
+    0% {
+        transform: translateX(100vw);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+.eventItem {
+    border-right: 1px solid white;
+    padding-right: var(--margin);
+}
+
+#topDonoLabel, #topDonoAmount, #topDonoName {
+    white-space: nowrap;
+}
+
