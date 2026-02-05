@@ -91,11 +91,10 @@ html {
 }
 
 .eventItem {
-    flex: 1;
+    flex: 1 0 auto;
     position: relative;
     text-align: center;
-    padding-right: var(--margin);
-    padding-left: var(--margin);
+    padding: 0 20px;
     min-width: 200px;
 }
 
