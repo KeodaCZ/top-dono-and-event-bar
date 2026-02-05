@@ -76,14 +76,32 @@ html {
     border-radius: var(--border-radius);
     width: 100%;
     white-space: nowrap;
+    position: relative;
 }
 
 .slider {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: var(--margin);
+    justify-content: space-between;
+    gap: 0;
     animation: slideLeft 15s linear infinite;
+    width: 100%;
+}
+
+.eventItem {
+    flex: 1;
+    position: relative;
+    text-align: center;
+}
+
+.eventItem:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0%;
+    width: 1px;
+    height: 100%;
+    background-color: white;
 }
 
 @keyframes slideLeft {
@@ -96,7 +114,6 @@ html {
 }
 
 .eventItem {
-    border-right: 1px solid white;
     padding-right: var(--margin);
 }
 
