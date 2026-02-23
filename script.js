@@ -96,7 +96,7 @@ client.on('Twitch.Follow', (response) => {
 });
 
 client.on('Twitch.Cheer', (response) => {
-	console.debug(response);
+	console.debug(response.data);
 	TwitchCheerHandler(response.data);
 });
 
