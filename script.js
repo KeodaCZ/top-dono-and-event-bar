@@ -18,6 +18,7 @@ const mode = urlParams.get('mode') || 'horizontal'; // horizontal or vertical
 const maxEvents = parseInt(urlParams.get('maxEvents')) || 5; // number of events to show
 const showTopDonor = urlParams.get('showTopDonor') === 'true'; // whether to show top donor
 const fontSize = urlParams.get('size') || '14'; // font size for the overlay
+const kickUsername = urlParams.get("kickUsername") || "";
 
 /////////////////
 // GLOBAL VARS //
@@ -25,6 +26,9 @@ const fontSize = urlParams.get('size') || '14'; // font size for the overlay
 
 let topDonorName = "Zatím nikdo";
 let topDonorAmount = 0;
+
+// Kick-specific variables
+const kickPusherWsUrl = 'wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=7.6.0&flash=false';
 
 // Array to hold recent events
 let recentEvents = [];
@@ -99,6 +103,153 @@ client.on('Twitch.Cheer', (response) => {
 	console.debug(response.data);
 	TwitchCheerHandler(response.data);
 });
+
+client.on('Twitch.Sub', (response) => {
+	console.debug(response.data);
+	// TwitchSubHandler(response.data);
+});
+
+client.on('Twitch.Resub', (response) => {
+	console.debug(response.data);
+	// TwitchResubHandler(response.data);
+});
+
+client.on('Twitch.GiftSub', (response) => {
+	console.debug(response.data);
+	// TwitchGiftSubHandler(response.data);
+});
+
+client.on('Twitch.GiftBomb', (response) => {
+	console.debug(response.data);
+	// TwitchGiftBombHandler(response.data);
+});
+
+client.on('Twitch.Raid', (response) => {
+	console.debug(response.data);
+	// TwitchRaidHandler(response.data);
+});
+
+client.on('YouTube.SuperChat', (response) => {
+	console.debug(response.data);
+	// YouTubeSuperChatHandler(response.data);
+});
+
+client.on('YouTube.SuperSticker', (response) => {
+	console.debug(response.data);
+	// YouTubeSuperStickerHandler(response.data);
+});
+
+client.on('YouTube.NewSponsor', (response) => {
+	console.debug(response.data);
+	// YouTubeNewSponsorHandler(response.data);
+});
+
+client.on('YouTube.GiftMembershipReceived', (response) => {
+	console.debug(response.data);
+	// YouTubeMembershipGiftHandler(response.data);
+});
+
+client.on('YouTube.NewSubscriber', (response) => {
+	console.debug(response.data);
+	// YouTubeNewSubscriberHandler(response.data);
+});
+
+client.on('Kick.Follow', (response) => {
+	console.debug(response.data);
+	// KickFollowHandler(response.data);
+});
+
+client.on('Kick.Subscription', (response) => {
+	console.debug(response.data);
+	// KickSubscriptionHandler(response.data);
+});
+
+client.on('Kick.Resubscription', (response) => {
+	console.debug(response.data);
+	// KickResubscriptionHandler(response.data);
+});
+
+client.on('Kick.GiftSubscription', (response) => {
+	console.debug(response.data);
+	// KickGiftSubscriptionHandler(response.data);
+});
+
+client.on('Kick.MassGiftSubscription', (response) => {
+	console.debug(response.data);
+	// KickMassGiftSubscriptionHandler(response.data);
+});
+
+
+
+
+///////////////////////////
+// KICK PUSHER WEBSOCKET //
+///////////////////////////
+
+// Connect and handle Pusher WebSocket
+async function KickConnect() {
+	if (!kickUsername)
+		return;
+
+	// Channel to subscribe to (you'll need the correct channel name here)
+	const kickIds = await GetKickIds(kickUsername);
+	const chatroomId = kickIds.chatroomId;
+	const channelId = kickIds.channelId;
+
+	const websocket = new WebSocket(kickPusherWsUrl);
+
+	// Reconnect
+	websocket.onclose = function () {
+		console.log(`Reconnecting to ${kickUsername}...`);
+		setTimeout(connectPusher, 5000);
+	};
+
+	websocket.onopen = function () {
+		console.log(`Kick successfully conntected to ${kickUsername}.`);
+	}
+
+	websocket.onmessage = function (response) {
+		try {
+			let data = JSON.parse(response.data);
+
+			console.debug(data);
+
+			// When connection is established, subscribe to a channel
+			if (data.event === 'pusher:connection_established') {
+				const socketData = JSON.parse(data.data);
+				console.log(`[Pusher] Socket established with ID: ${socketData.socket_id}`);
+
+				// Now subscribe to a channel
+				websocket.send(JSON.stringify({ event: 'pusher:subscribe', data: { channel: `chatroom_${chatroomId}` } }));
+				websocket.send(JSON.stringify({ event: 'pusher:subscribe', data: { channel: `chatrooms.${chatroomId}` } }));
+				websocket.send(JSON.stringify({ event: 'pusher:subscribe', data: { channel: `chatrooms.${chatroomId}.v2` } }));
+				websocket.send(JSON.stringify({ event: 'pusher:subscribe', data: { channel: `predictions-channel-${chatroomId}` } }));
+				websocket.send(JSON.stringify({ event: 'pusher:subscribe', data: { channel: `channel_${channelId}` } }));
+				console.log(`[Pusher] Sent subscription request to channel: ${chatroomId}`);
+			}
+
+			// Event handlers
+			const eventArgs = JSON.parse(data.data);
+			const event = data.event.split('\\').pop();
+			switch (event) {
+				case 'StreamHostEvent':
+					KickStreamHost(eventArgs);
+					break;
+				case 'KicksGifted':
+					KickKicksGifted(eventArgs);
+					break;
+			}
+		}
+		catch (error) {
+			console.error(error);
+		}
+	}
+}
+
+// Try connect when window is loaded
+window.addEventListener('load', KickConnect);
+
+
 
 
 ///////////////
@@ -184,11 +335,15 @@ function TwitchFollowHandler(data) {
 }
 
 function TwitchCheerHandler(data) {
-	const username = data.user_name;
-	const amount = data.amount;
-	let eventText = `test`;
+	const username = data.user.name;
+	const amount = data.bits;
+	let eventText = `${username} daroval ${amount} bitů!`;
 	updateRecentEvents(eventText);
 }
+
+
+
+
 
 //////////////////////
 // HELPER FUNCTIONS //
@@ -201,6 +356,40 @@ function updateRecentEvents(eventText) {
 	}
 	updateEventSlider();
 }
+
+// Fetch Kick chatroom and channel IDs based on username, with retry logic for underscores/dashes
+async function GetKickIds(username) {
+    // First attempt with the original username
+    let url = `https://kick.com/api/v2/channels/${username}`;
+
+    try {
+        let response = await fetch(url);
+        if (!response.ok) {
+            // Retry with underscores replaced by dashes
+            const altUsername = username.replace(/_/g, "-");
+            url = `https://kick.com/api/v2/channels/${altUsername}`;
+            response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error ${response.status}`);
+            }
+        }
+
+        const data = await response.json();
+        if (data.chatroom && data.chatroom.id) {
+            return { chatroomId: data.chatroom.id, channelId: data.chatroom.channel_id };
+        } else {
+            throw new Error("Chatroom ID not found in response.");
+        }
+    } catch (error) {
+        console.error("Failed to fetch chatroom ID:", error.message);
+        return null;
+    }
+}
+
+
+
+
+
 
 ///////////////////////////////////
 // STREAMER.BOT WEBSOCKET STATUS //
