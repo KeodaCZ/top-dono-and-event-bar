@@ -15,9 +15,9 @@ const sbServerPort = urlParams.get("port") || "8080";
 /////////////
 
 const mode = urlParams.get('mode') || 'horizontal'; // horizontal or vertical
-const maxEvents = parseInt(urlParams.get('maxEvents')) || 3; // number of events to show
+const maxEvents = parseInt(urlParams.get('maxEvents')) || 5; // number of events to show
 const showTopDonor = urlParams.get('showTopDonor') === 'true'; // whether to show top donor
-
+const fontSize = urlParams.get('size') || '14'; // font size for the overlay
 
 /////////////////
 // GLOBAL VARS //
@@ -26,18 +26,22 @@ const showTopDonor = urlParams.get('showTopDonor') === 'true'; // whether to sho
 let topDonorName = "Zatím nikdo";
 let topDonorAmount = 0;
 
-let events = ["test 100 bits", "test 25Kč", "test 10Kč"]; // array to hold recent events
+// Array to hold recent events
+let recentEvents = [];
 
 ////////////////
 // PAGE SETUP //
 ////////////////
 
-//dom elements
+// dom elements
 const horizontalContainer = document.getElementById('horizontalContainer');
 const verticalContainer = document.getElementById('verticalContainer');
 const slider = document.querySelector('.slider');
 
-//set mode
+// set font size
+document.documentElement.style.setProperty("--fontSize", fontSize + "px");
+
+// set mode
 if (mode === 'horizontal') {
     horizontalContainer.style.display = 'flex';
 } else if (mode === 'vertical') {
@@ -45,6 +49,21 @@ if (mode === 'horizontal') {
 }
 
 updateSliderAnimation();
+
+// Observe changes to the slider content and update animation accordingly
+const observer = new MutationObserver(() => {
+	updateSliderAnimation();
+});
+
+// Start observing the slider for changes in its child elements
+if (slider) {
+	observer.observe(slider, { childList: true, subtree: true });
+}
+
+// Update animation on window resize to recalculate transforms
+window.addEventListener('resize', () => {
+	updateSliderAnimation();
+});
 
 /////////////////////////
 // STREAMER.BOT CLIENT //
@@ -65,6 +84,22 @@ const client = new StreamerbotClient({
 		SetConnectionStatus(false);
 	}
 });
+
+client.on('StreamElements.Tip', (response) => {
+	console.debug(response.data);
+	StreamElementsTipHandler(response.data);
+});
+
+client.on('Twitch.Follow', (response) => {
+	console.debug(response.data);
+	TwitchFollowHandler(response.data);
+});
+
+client.on('Twitch.Cheer', (response) => {
+	console.debug(response);
+	TwitchCheerHandler(response.data);
+});
+
 
 ///////////////
 // EVENT BAR //
@@ -113,27 +148,66 @@ function updateSliderAnimation() {
 	}
 }
 
-// Observe changes to the slider content and update animation accordingly
-const observer = new MutationObserver(() => {
-	updateSliderAnimation();
-});
+function updateEventSlider() {
+	const slider = document.querySelector('.slider');
+	if (!slider) return;
+	slider.innerHTML = '';
+	
+	recentEvents.forEach(event => {
+		const eventItem = document.createElement('div');
+		eventItem.classList.add('eventItem');
+		eventItem.innerText = event.text;
+		slider.appendChild(eventItem);
+	});
 
-// Start observing the slider for changes in its child elements
-if (slider) {
-	observer.observe(slider, { childList: true, subtree: true });
+	updateSliderAnimation();
 }
 
-// Update animation on window resize to recalculate transforms
-window.addEventListener('resize', () => {
-	updateSliderAnimation();
-});
+function StreamElementsTipHandler(data) {
+	const donater= data.username;
+	const formattedAmount = `$${data.amount}`;
+	const currency = data.currency;
+
+	let eventText = `${donater} daroval ${formattedAmount}${currency}`;
+
+	updateRecentEvents(eventText);
+}
+
+function TwitchFollowHandler(data) {
+	let username = data.user_name;
+	if (data.user_name.toLowerCase() != data.user_login.toLowerCase())
+		username = `${data.user_name} (${data.user_login})`;
+
+	let eventText = `${username} začal sledovat Twitch!`;
+
+	updateRecentEvents(eventText);
+}
+
+function TwitchCheerHandler(data) {
+	const username = data.user_name;
+	const amount = data.amount;
+	let eventText = `test`;
+	updateRecentEvents(eventText);
+}
+
+//////////////////////
+// HELPER FUNCTIONS //
+//////////////////////
+
+function updateRecentEvents(eventText) {
+	recentEvents.unshift({ text: eventText });
+	if (recentEvents.length > maxEvents) {
+		recentEvents.pop();
+	}
+	updateEventSlider();
+}
 
 ///////////////////////////////////
 // STREAMER.BOT WEBSOCKET STATUS //
 ///////////////////////////////////
 
 // This function sets the visibility of the Streamer.bot status label on the overlay
-	function SetConnectionStatus(connected) {
+function SetConnectionStatus(connected) {
 	let statusContainer = document.getElementById("statusContainer");
 	if (connected) {
 		statusContainer.style.background = "#2FB774";

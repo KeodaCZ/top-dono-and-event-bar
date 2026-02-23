@@ -1,12 +1,15 @@
-* {
+*:root {
 	margin: 0;
 	padding: 0;
 	--margin: 5px;
 	--border-radius: 0.5em;
+    --fontSize: 16px;
+    --background: rgba(0, 0, 0, 0.5);
 }
 
 body {
 	overflow: hidden;
+    font-size: var(--fontSize);
 }
 
 html {
@@ -18,7 +21,7 @@ html {
 
 #statusContainer {
 	font-weight: 500;
-	font-size: 30px;
+	font-size: var(--fontSize);
 	text-align: center;
 	background-color: #D12025;
 	color: white;
@@ -36,10 +39,11 @@ html {
     align-items: center;
     justify-content: center;
     gap: var(--margin);
-    padding: var(--margin);
     width: 100%;
     height: 100%;
     box-sizing: border-box;
+    background-color: var(--background);
+    border-radius: var(--border-radius);
 }
 
 #verticalContainer {
@@ -47,7 +51,6 @@ html {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: var(--margin);
     padding: var(--margin);
     width: 100%;
     height: 100%;
@@ -61,8 +64,6 @@ html {
     justify-content: center;
     gap: var(--margin);
     padding: var(--margin);
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: var(--border-radius);
 }
 
 #verticalEventBar {
@@ -72,8 +73,6 @@ html {
     overflow: hidden;
     gap: var(--margin);
     padding: var(--margin);
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: var(--border-radius);
     width: 100%;
     white-space: nowrap;
     position: relative;
@@ -120,3 +119,11 @@ html {
     white-space: nowrap;
 }
 
+#topDonoName {
+    min-width: 200px;
+}
+
+#topDonoAmount {
+    min-width: 75px;
+    text-align: right;
+}
