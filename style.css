@@ -120,10 +120,10 @@ html {
 }
 
 #topDonoName {
-    min-width: 200px;
+    min-width: 150px;
 }
 
 #topDonoAmount {
-    min-width: 75px;
+    min-width: 50px;
     text-align: right;
 }

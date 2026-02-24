@@ -106,77 +106,77 @@ client.on('Twitch.Cheer', (response) => {
 
 client.on('Twitch.Sub', (response) => {
 	console.debug(response.data);
-	// TwitchSubHandler(response.data);
+	TwitchSubHandler(response.data);
 });
 
-client.on('Twitch.Resub', (response) => {
+client.on('Twitch.ReSub', (response) => {
 	console.debug(response.data);
-	// TwitchResubHandler(response.data);
+	TwitchResubHandler(response.data);
 });
 
 client.on('Twitch.GiftSub', (response) => {
 	console.debug(response.data);
-	// TwitchGiftSubHandler(response.data);
+	TwitchGiftSubHandler(response.data);
 });
 
 client.on('Twitch.GiftBomb', (response) => {
 	console.debug(response.data);
-	// TwitchGiftBombHandler(response.data);
+	TwitchGiftBombHandler(response.data);
 });
 
 client.on('Twitch.Raid', (response) => {
 	console.debug(response.data);
-	// TwitchRaidHandler(response.data);
+	TwitchRaidHandler(response.data);
 });
 
 client.on('YouTube.SuperChat', (response) => {
 	console.debug(response.data);
-	// YouTubeSuperChatHandler(response.data);
+	YouTubeSuperChatHandler(response.data);
 });
 
 client.on('YouTube.SuperSticker', (response) => {
 	console.debug(response.data);
-	// YouTubeSuperStickerHandler(response.data);
+	YouTubeSuperStickerHandler(response.data);
 });
 
 client.on('YouTube.NewSponsor', (response) => {
 	console.debug(response.data);
-	// YouTubeNewSponsorHandler(response.data);
+	YouTubeNewSponsorHandler(response.data);
 });
 
 client.on('YouTube.GiftMembershipReceived', (response) => {
 	console.debug(response.data);
-	// YouTubeMembershipGiftHandler(response.data);
+	YouTubeMembershipGiftHandler(response.data);
 });
 
 client.on('YouTube.NewSubscriber', (response) => {
 	console.debug(response.data);
-	// YouTubeNewSubscriberHandler(response.data);
+	YouTubeNewSubscriberHandler(response.data);
 });
 
 client.on('Kick.Follow', (response) => {
 	console.debug(response.data);
-	// KickFollowHandler(response.data);
+	KickFollowHandler(response.data);
 });
 
 client.on('Kick.Subscription', (response) => {
 	console.debug(response.data);
-	// KickSubscriptionHandler(response.data);
+	KickSubscriptionHandler(response.data);
 });
 
 client.on('Kick.Resubscription', (response) => {
 	console.debug(response.data);
-	// KickResubscriptionHandler(response.data);
+	KickResubscriptionHandler(response.data);
 });
 
 client.on('Kick.GiftSubscription', (response) => {
 	console.debug(response.data);
-	// KickGiftSubscriptionHandler(response.data);
+	KickGiftSubscriptionHandler(response.data);
 });
 
 client.on('Kick.MassGiftSubscription', (response) => {
 	console.debug(response.data);
-	// KickMassGiftSubscriptionHandler(response.data);
+	KickMassGiftSubscriptionHandler(response.data);
 });
 
 
@@ -233,10 +233,10 @@ async function KickConnect() {
 			const event = data.event.split('\\').pop();
 			switch (event) {
 				case 'StreamHostEvent':
-					KickStreamHost(eventArgs);
+					KickStreamHostHandler(eventArgs);
 					break;
 				case 'KicksGifted':
-					KickKicksGifted(eventArgs);
+					KickKicksGiftedHandler(eventArgs);
 					break;
 			}
 		}
@@ -329,7 +329,7 @@ function TwitchFollowHandler(data) {
 	if (data.user_name.toLowerCase() != data.user_login.toLowerCase())
 		username = `${data.user_name} (${data.user_login})`;
 
-	let eventText = `${username} začal sledovat Twitch!`;
+	let eventText = `${username} začal sledovat na Twitchi!`;
 
 	updateRecentEvents(eventText);
 }
@@ -341,7 +341,124 @@ function TwitchCheerHandler(data) {
 	updateRecentEvents(eventText);
 }
 
+function TwitchSubHandler(data) {
+	const username = data.user.name;
+	const tier = data.is_prime ? `Prime` : `Tier ${data.sub_tier/1000}`;
+	let eventText =  `${username} si koupil sub! (${tier})`;
+	updateRecentEvents(eventText);
+}
 
+function TwitchResubHandler(data) {
+	const username = data.user.name;
+	const months = data.cumulativeMonths == 1 ? "1 měsíc" : data.cumulativeMonths < 5 ? `${data.cumulativeMonths} měsíce` : `${data.cumulativeMonths} měsíců`;
+	const tier = data.isPrime ? `Prime` : `Tier ${data.subTier/1000}`;
+	let eventText =  `${username} obnovil sub! (${months}, ${tier})`;
+	updateRecentEvents(eventText);
+}
+
+function TwitchGiftSubHandler(data) {
+	const username = data.user.name;
+	const recipient = data.recipient.name
+	const tier = `Tier ${data.subTier/1000}`;
+	let eventText =  `${username} daroval sub pro ${recipient}! (${tier})`;
+	updateRecentEvents(eventText);
+}
+
+function TwitchGiftBombHandler(data) {
+	const username = data.user.name;
+	const total = data.total;
+	const tier = `Tier ${data.sub_tier/1000}`;
+	let eventText =  `${username} daroval ${total} subů! (${tier})`;
+	updateRecentEvents(eventText);
+}
+
+function TwitchRaidHandler(data) {
+	const username = data.from_broadcaster_user_name;
+	const viewers = data.viewers;
+	let eventText =  `${username} naboural s ${viewers} diváky!`;
+	updateRecentEvents(eventText);
+}
+
+function YouTubeSuperChatHandler(data) {
+	const username = data.user.name;
+	const amount = data.amount;
+	let eventText = `${username} daroval ${amount} přes SuperChat!`;
+	updateRecentEvents(eventText);
+}
+
+function YouTubeSuperStickerHandler(data) {
+	const username = data.user.name;
+	const amount = data.amount;
+	let eventText = `${username} daroval SuperSticker: ${amount}!`;
+	updateRecentEvents(eventText);
+}
+
+function YouTubeNewSponsorHandler(data) {
+	const username = data.user.name;
+	const level = data.levelName
+	let eventText = `${username} se stal sponzorem na úrovni ${level}!`;
+	updateRecentEvents(eventText);
+}
+
+function YouTubeMembershipGiftHandler(data) {
+	const gifter = data.gifter.name;
+	const recipient = data.user.name;
+	let eventText = `${gifter} daroval členství pro ${recipient}! (${data.tier})`;
+	updateRecentEvents(eventText);
+}
+
+function YouTubeNewSubscriberHandler(data) {
+	const username = data.user.name;
+	let eventText = `${username} nahofil odběr na YT!`;
+	updateRecentEvents(eventText);
+}
+
+function KickFollowHandler(data) {
+	const username = data.user.name;
+	let eventText = `${username} hodil follow na Kicku!`;
+	updateRecentEvents(eventText);
+}
+
+function KickSubscriptionHandler(data) {
+	const username = data.user.name;
+	let eventText = `${username} si koupil sub na Kicku!`;
+	updateRecentEvents(eventText);
+}
+
+function KickResubscriptionHandler(data) {
+	const username = data.user.name;
+	const months = data.duration == 1 ? "1 měsíc" : data.duration < 5 ? `${data.duration} měsíce` : `${data.duration} měsíců`;
+	let eventText = `${username} obnovil sub na Kicku! (${months})`;
+	updateRecentEvents(eventText);
+}
+
+function KickGiftSubscriptionHandler(data) {
+	const username = data.user.name;
+	const recipient = data.recipient.name;
+	let eventText = `${username} daroval sub pro ${recipient} na Kicku!`;
+	updateRecentEvents(eventText);
+}
+
+function KickMassGiftSubscriptionHandler(data) {
+	const username = data.user.name;
+	const total = data.recipients.length;
+	let eventText = `${username} daroval ${total} subů na Kicku!`;
+	updateRecentEvents(eventText);
+}
+
+function KickStreamHostHandler(data) {
+	const username = data.host_username;
+	const viewers = data.number_viewers;
+	let eventText = `${username} naboural s ${viewers} diváky na Kicku!`;
+	updateRecentEvents(eventText);
+}
+
+function KickKicksGiftedHandler(data) {
+	const username = data.sender.username;
+	const amount = data.gift.amount;
+	let eventText = `${username} daroval ${amount} Kicks na Kicku!`;
+	updateRecentEvents(eventText);
+}
 
 
 
