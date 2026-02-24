@@ -18,7 +18,10 @@ const mode = urlParams.get('mode') || 'horizontal'; // horizontal or vertical
 const maxEvents = parseInt(urlParams.get('maxEvents')) || 5; // number of events to show
 // const showTopDonor = urlParams.get('showTopDonor') === 'true'; // whether to show top donor
 const fontSize = urlParams.get('size') || '21'; // font size for the overlay
-const kickUsername = urlParams.get("kickUsername") || "";
+const kickUsername = urlParams.get("kickUsername") || ""; // Kick username for WebSocket connection (without @)
+const backgroundColor = urlParams.get("backgroundColor") || "#000000"; // background color in hex format (e.g., #000000 for black)
+const backgroundOpacity = urlParams.get("backgroundOpacity") || "0.5"; // background opacity as a decimal (e.g., 0.5 for 50% opacity)
+const textColor = urlParams.get("textColor") || "#ffffff"; // text color in hex format (e.g., #ffffff for white)
 
 /////////////////
 // GLOBAL VARS //
@@ -45,6 +48,18 @@ const slider = document.querySelector('.slider');
 
 // set font size
 document.documentElement.style.setProperty("--fontSize", fontSize + "px");
+
+// set colors
+document.documentElement.style.setProperty("--textColor", textColor);
+
+// Set the background color
+const opacity255 = Math.round(parseFloat(backgroundOpacity) * 255);
+let hexOpacity = opacity255.toString(16);
+if (hexOpacity.length < 2) {
+	hexOpacity = "0" + hexOpacity;
+}
+let background = `${backgroundColor}${hexOpacity}`;
+document.documentElement.style.setProperty("--background", background);
 
 // set mode
 if (mode === 'horizontal') {
