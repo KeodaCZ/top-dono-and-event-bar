@@ -16,8 +16,8 @@ const sbServerPort = urlParams.get("port") || "8080";
 
 const mode = urlParams.get('mode') || 'horizontal'; // horizontal or vertical
 const maxEvents = parseInt(urlParams.get('maxEvents')) || 5; // number of events to show
-const showTopDonor = urlParams.get('showTopDonor') === 'true'; // whether to show top donor
-const fontSize = urlParams.get('size') || '14'; // font size for the overlay
+// const showTopDonor = urlParams.get('showTopDonor') === 'true'; // whether to show top donor
+const fontSize = urlParams.get('size') || '21'; // font size for the overlay
 const kickUsername = urlParams.get("kickUsername") || "";
 
 /////////////////
@@ -26,6 +26,7 @@ const kickUsername = urlParams.get("kickUsername") || "";
 
 let topDonorName = "Zatím nikdo";
 let topDonorAmount = 0;
+let donators = [];
 
 // Kick-specific variables
 const kickPusherWsUrl = 'wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=7.6.0&flash=false';
@@ -314,6 +315,27 @@ function updateEventSlider() {
 	updateSliderAnimation();
 }
 
+function updateDonators(name, amount) {
+	if (donators[name]) {
+		donators[name] += amount;
+	}
+
+	if (!donators[name]) {
+		donators[name] = amount;
+	}
+
+	if (donators[name] > topDonorAmount) {
+		updateTopDonator(name);
+	}
+}
+
+function updateTopDonator(name) {
+	topDonorName = name;
+	topDonorAmount = donators[name];
+	document.getElementById('topDonoName').innerText = topDonorName;
+	document.getElementById('topDonoAmount').innerText = topDonorAmount;
+}
+
 function StreamElementsTipHandler(data) {
 	const donater= data.username;
 	const formattedAmount = `$${data.amount}`;
@@ -322,6 +344,7 @@ function StreamElementsTipHandler(data) {
 	let eventText = `${donater} daroval ${formattedAmount}${currency}`;
 
 	updateRecentEvents(eventText);
+	updateDonators(donater, data.amount);
 }
 
 function TwitchFollowHandler(data) {
