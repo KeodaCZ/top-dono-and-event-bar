@@ -54,7 +54,7 @@ index.html?mode=vertical
 
 **Vertical mode with 3 events and black 2px outline:**
 ```
-index.html?mode=vertical&maxEvents=3&outlineColor=000000&outlineThickness=2
+index.html?mode=vertical&maxEvents=3&outlineColor=%23000000&outlineThickness=2
 ```
 
 **Connect to remote Streamer.bot:**
@@ -64,7 +64,7 @@ index.html?address=192.168.1.100&port=8080
 
 **Custom font size and colors:**
 ```
-index.html?mode=vertical&size=24&backgroundColor=#1a1a1a&textColor=#00ff00
+index.html?mode=vertical&size=24&backgroundColor=%231a1a1a&textColor=%2300ff00
 ```
 
 **No events (maxEvents=0):**
