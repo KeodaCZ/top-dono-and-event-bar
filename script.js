@@ -77,9 +77,16 @@ if (mode === 'horizontal') {
     horizontalContainer.style.display = 'flex';
 } else if (mode === 'vertical') {
     verticalContainer.style.display = 'flex';
+    updateVerticalContainerHeight();
 }
 
 updateSliderAnimation();
+
+window.addEventListener('resize', () => {
+    if (mode === 'vertical') {
+        updateVerticalContainerHeight();
+    }
+});
 
 // Observe changes to the slider content and update animation accordingly
 const observer = new MutationObserver(() => {
@@ -346,17 +353,93 @@ function updateEventSlider() {
 	updateSliderAnimation();
 }
 
+function updateVerticalContainerHeight() {
+	const verticalContainer = document.getElementById('verticalEventContainer');
+	if (!verticalContainer) return;
+	
+	const baseFontSize = parseInt(fontSize);
+	const margin = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--margin')) || 10;
+	const padding = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--padding')) || 5;
+	
+	const firstItemHeight = baseFontSize * 1.5;
+	const otherItemHeight = baseFontSize * 1.3;
+	const gap = margin;
+	
+	const totalHeight = firstItemHeight + (otherItemHeight * (maxEvents - 1)) + (gap * (maxEvents - 1)) + (padding * 2);
+	
+	verticalContainer.style.maxHeight = `${totalHeight}px`;
+}
+
 function updateVerticalEventBar() {
 	const verticalBar = document.getElementById('verticalEventBar');
 	if (!verticalBar) return;
-	verticalBar.innerHTML = '';
 	
-	recentEvents.forEach(event => {
-		const eventItem = document.createElement('div');
-		eventItem.classList.add('verticalEventItem');
-		eventItem.innerText = event.text;
-		verticalBar.appendChild(eventItem);
-	});
+	const baseFontSize = parseInt(fontSize);
+	const existingItems = Array.from(verticalBar.querySelectorAll('.verticalEventItem'));
+	
+	if (existingItems.length > 0 && recentEvents.length > 0) {
+		const newItem = document.createElement('div');
+		newItem.classList.add('verticalEventItem');
+		newItem.innerText = recentEvents[0].text;
+		newItem.style.fontSize = `${baseFontSize * 0.9}px`;
+		newItem.style.transform = 'translateY(-100%)';
+		newItem.style.opacity = '0';
+		
+		if (verticalBar.children.length >= maxEvents) {
+			const lastItem = verticalBar.lastChild;
+			
+			requestAnimationFrame(() => {
+				lastItem.style.transition = 'opacity 0.3s ease-out, max-height 0.3s ease-out';
+				lastItem.style.opacity = '0';
+				lastItem.style.maxHeight = '0';
+				lastItem.style.marginBottom = '0';
+				
+				setTimeout(() => {
+					if (verticalBar.contains(lastItem)) {
+						verticalBar.removeChild(lastItem);
+					}
+				}, 300);
+			});
+		}
+		
+		verticalBar.insertBefore(newItem, existingItems[0]);
+		
+		existingItems.forEach(item => {
+			item.style.fontSize = `${baseFontSize * 0.8}px`;
+		});
+		
+		requestAnimationFrame(() => {
+			newItem.style.transition = 'transform 0.5s ease-out, opacity 0.5s ease-out, max-height 0.5s ease-out';
+			newItem.style.transform = 'translateY(0)';
+			newItem.style.opacity = '1';
+			newItem.style.maxHeight = newItem.scrollHeight + 'px';
+			
+			setTimeout(() => {
+				newItem.style.transition = 'max-height 0.5s ease-in-out';
+			}, 500);
+		});
+	} else {
+		recentEvents.forEach((event, index) => {
+			const eventItem = document.createElement('div');
+			eventItem.classList.add('verticalEventItem');
+			eventItem.innerText = event.text;
+			
+			if (index === 0) {
+				eventItem.style.fontSize = `${baseFontSize * 0.9}px`;
+			} else {
+				eventItem.style.fontSize = `${baseFontSize * 0.8}px`;
+			}
+			
+			verticalBar.appendChild(eventItem);
+		});
+		
+		setTimeout(() => {
+			const items = verticalBar.querySelectorAll('.verticalEventItem');
+			items.forEach(item => {
+				item.style.maxHeight = item.scrollHeight + 'px';
+			});
+		}, 10);
+	}
 }
 
 function updateDonators(name, amount) {

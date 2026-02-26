@@ -65,6 +65,14 @@ html {
     border-radius: var(--border-radius);
 }
 
+#verticalEventContainer {
+    max-height: 300px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
 #topDonoBar {
     display: flex;
     flex-direction: row;
@@ -116,8 +124,9 @@ html {
 
 .verticalEventItem {
     width: 100%;
-    padding: var(--padding);
     box-sizing: border-box;
+    max-height: 0;
+    transition: max-height 0.5s ease-in-out;
 }
 
 @keyframes slideLeft {
