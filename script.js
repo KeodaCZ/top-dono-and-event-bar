@@ -358,14 +358,17 @@ function updateVerticalContainerHeight() {
 	if (!verticalContainer) return;
 	
 	const baseFontSize = parseInt(fontSize);
-	const margin = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--margin')) || 10;
 	const padding = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--padding')) || 5;
+	const margin = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--margin')) || 10;
 	
-	const firstItemHeight = baseFontSize * 1.5;
-	const otherItemHeight = baseFontSize * 1.3;
-	const gap = margin;
+	const ŘÁDKŮ_NA_ITEM = 1; // Assuming each event item takes up 1 line of text on average. Adjust if needed.
+	const LINE_HEIGHT = 1.2;
 	
-	const totalHeight = firstItemHeight + (otherItemHeight * (maxEvents - 1)) + (gap * (maxEvents - 1)) + (padding * 2);
+	const výškaŘádku = baseFontSize * LINE_HEIGHT;
+	const firstItemHeight = baseFontSize * 0.9 * LINE_HEIGHT * ŘÁDKŮ_NA_ITEM + (padding * 2);
+	const otherItemHeight = baseFontSize * 0.8 * LINE_HEIGHT * ŘÁDKŮ_NA_ITEM + (padding * 2);
+	
+	const totalHeight = firstItemHeight + (otherItemHeight * (maxEvents - 1));
 	
 	verticalContainer.style.maxHeight = `${totalHeight}px`;
 }
@@ -391,14 +394,12 @@ function updateVerticalEventBar() {
 			requestAnimationFrame(() => {
 				lastItem.style.transition = 'opacity 0.3s ease-out, max-height 0.3s ease-out';
 				lastItem.style.opacity = '0';
-				lastItem.style.maxHeight = '0';
-				lastItem.style.marginBottom = '0';
 				
 				setTimeout(() => {
 					if (verticalBar.contains(lastItem)) {
 						verticalBar.removeChild(lastItem);
 					}
-				}, 300);
+				}, 500);
 			});
 		}
 		
