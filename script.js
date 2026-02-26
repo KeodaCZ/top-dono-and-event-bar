@@ -383,7 +383,7 @@ function updateVerticalContainerHeight() {
 	
 	const výškaŘádku = baseFontSize * LINE_HEIGHT;
 	const firstItemHeight = baseFontSize * 0.9 * LINE_HEIGHT * ŘÁDKŮ_NA_ITEM + (padding * 2);
-	const otherItemHeight = baseFontSize * 0.8 * LINE_HEIGHT * ŘÁDKŮ_NA_ITEM + (padding * 2);
+	const otherItemHeight = baseFontSize * 0.7 * LINE_HEIGHT * ŘÁDKŮ_NA_ITEM + (padding * 2);
 	
 	const totalHeight = firstItemHeight + (otherItemHeight * (maxEvents - 1));
 	
@@ -454,7 +454,7 @@ function updateVerticalEventBar() {
 			if (index === 0) {
 				eventItem.style.fontSize = `${baseFontSize * 0.9}px`;
 			} else {
-				eventItem.style.fontSize = `${baseFontSize * 0.8}px`;
+				eventItem.style.fontSize = `${baseFontSize * 0.7}px`;
 			}
 			
 			verticalBar.appendChild(eventItem);
