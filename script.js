@@ -75,20 +75,10 @@ let background = `${backgroundColor}${hexOpacity}`;
 document.documentElement.style.setProperty("--background", background);
 
 // Set outline text shadow
-if (outlineColor) {
-	const thickness = outlineThickness;
-	const r = parseInt(outlineColor.slice(1, 3), 16);
-	const g = parseInt(outlineColor.slice(3, 5), 16);
-	const b = parseInt(outlineColor.slice(5, 7), 16);
-	
-	const textShadow = `
-		-${thickness}px -${thickness}px 0 rgba(${r}, ${g}, ${b}, 1),
-		 ${thickness}px -${thickness}px 0 rgba(${r}, ${g}, ${b}, 1),
-		-${thickness}px  ${thickness}px 0 rgba(${r}, ${g}, ${b}, 1),
-		 ${thickness}px  ${thickness}px 0 rgba(${r}, ${g}, ${b}, 1)
-	`;
-	
-	document.documentElement.style.setProperty("--outline-text-shadow", textShadow);
+if (outlineColor) {	
+	const thickness = parseInt(outlineThickness) * 2;
+	document.documentElement.style.setProperty("--outline-color", outlineColor);
+	document.documentElement.style.setProperty("--outline-thickness", thickness + "px");
 }
 
 // set mode

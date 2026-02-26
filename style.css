@@ -1,4 +1,4 @@
-*:root {
+:root {
 	margin: 0;
 	padding: 0;
     line-height: 1.2;
@@ -8,8 +8,11 @@
     --fontSize: 16px;
     --background: #00000080; /* backgroundColor with opacity */
     --textColor: white;
-    --outline-text-shadow: none;
-    text-shadow: var(--outline-text-shadow);
+    --outline-color: none;
+    --outline-thickness: 0px;
+    -webkit-text-stroke:var(--outline-thickness) var(--outline-color);
+    paint-order: stroke fill;
+    
 }
 
 body {
