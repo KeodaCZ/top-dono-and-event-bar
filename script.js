@@ -10,6 +10,10 @@ const urlParams = new URLSearchParams(queryString);
 const sbServerAddress = urlParams.get("address") || "127.0.0.1";
 const sbServerPort = urlParams.get("port") || "8080";
 
+
+
+
+
 /////////////
 // OPTIONS //
 /////////////
@@ -22,6 +26,10 @@ const kickUsername = urlParams.get("kickUsername") || ""; // Kick username for W
 const backgroundColor = urlParams.get("backgroundColor") || "#000000"; // background color in hex format (e.g., #000000 for black)
 const backgroundOpacity = urlParams.get("backgroundOpacity") || "0.5"; // background opacity as a decimal (e.g., 0.5 for 50% opacity)
 const textColor = urlParams.get("textColor") || "#ffffff"; // text color in hex format (e.g., #ffffff for white)
+
+
+
+
 
 /////////////////
 // GLOBAL VARS //
@@ -36,6 +44,9 @@ const kickPusherWsUrl = 'wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protoc
 
 // Array to hold recent events
 let recentEvents = [];
+
+
+
 
 ////////////////
 // PAGE SETUP //
@@ -84,6 +95,10 @@ if (slider) {
 window.addEventListener('resize', () => {
 	updateSliderAnimation();
 });
+
+
+
+
 
 /////////////////////////
 // STREAMER.BOT CLIENT //
@@ -264,6 +279,7 @@ async function KickConnect() {
 
 // Try connect when window is loaded
 window.addEventListener('load', KickConnect);
+
 
 
 
@@ -497,6 +513,8 @@ function KickKicksGiftedHandler(data) {
 	let eventText = `${username} daroval ${amount} Kicks na Kicku!`;
 	updateRecentEvents(eventText);
 }
+
+
 
 
 
