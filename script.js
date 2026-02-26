@@ -19,7 +19,8 @@ const sbServerPort = urlParams.get("port") || "8080";
 /////////////
 
 const mode = urlParams.get('mode') || 'horizontal'; // horizontal or vertical
-const maxEvents = parseInt(urlParams.get('maxEvents')) || 5; // number of events to show
+const maxEventsParam = parseInt(urlParams.get('maxEvents'));
+const maxEvents = (isNaN(maxEventsParam) || maxEventsParam < 0) ? 5 : maxEventsParam; // number of events to show
 // const showTopDonor = urlParams.get('showTopDonor') === 'true'; // whether to show top donor
 const fontSize = urlParams.get('size') || '21'; // font size for the overlay
 const kickUsername = urlParams.get("kickUsername") || ""; // Kick username for WebSocket connection (without @)
@@ -27,7 +28,8 @@ const backgroundColor = urlParams.get("backgroundColor") || "#000000"; // backgr
 const backgroundOpacity = urlParams.get("backgroundOpacity") || "0.5"; // background opacity as a decimal (e.g., 0.5 for 50% opacity)
 const textColor = urlParams.get("textColor") || "#ffffff"; // text color in hex format (e.g., #ffffff for white)
 const outlineColor = urlParams.get("outlineColor") || ""; // outline color in hex format (e.g., #000000 for black)
-const outlineThickness = parseInt(urlParams.get("outlineThickness")) || 2; // outline thickness in pixels
+const outlineThicknessParam = parseInt(urlParams.get("outlineThickness"));
+const outlineThickness = (isNaN(outlineThicknessParam) || outlineThicknessParam < 0) ? 0 : outlineThicknessParam; // outline thickness in pixels (e.g., 2 for 2px)
 
 
 
@@ -309,7 +311,7 @@ function calculateSliderTransform() {
 
 	if (!slider) return null;
 	
-	const container = document.getElementById('verticalEventBar');
+	const container = document.getElementById('horizontalEventBar');
 	if (!container) return null;
 	
 	const containerWidth = container.offsetWidth;
@@ -335,7 +337,7 @@ function updateSliderAnimation() {
 	slider.style.setProperty('--start-transform', transform.start);
 	slider.style.setProperty('--end-transform', transform.end);
 	
-	const container = document.getElementById('verticalEventBar');
+	const container = document.getElementById('horizontalEventBar');
 	const containerWidth = container.offsetWidth;
 	const sliderWidth = slider.scrollWidth;
 	
@@ -650,6 +652,10 @@ function KickKicksGiftedHandler(data) {
 //////////////////////
 
 function updateRecentEvents(eventText) {
+	if (maxEvents <= 0) return;
+
+	console.log(maxEvents);
+
 	recentEvents.unshift({ text: eventText });
 	if (recentEvents.length > maxEvents) {
 		recentEvents.pop();
