@@ -296,6 +296,8 @@ window.addEventListener('load', KickConnect);
 ///////////////
 
 function calculateSliderTransform() {
+	if (mode !== 'horizontal') return null;
+
 	if (!slider) return null;
 	
 	const container = document.getElementById('verticalEventBar');
@@ -314,6 +316,8 @@ function calculateSliderTransform() {
 }
 
 function updateSliderAnimation() {
+	if (mode !== 'horizontal') return;
+
 	if (!slider) return;
 	
 	const transform = calculateSliderTransform();
@@ -339,6 +343,8 @@ function updateSliderAnimation() {
 }
 
 function updateEventSlider() {
+	if (mode !== 'horizontal') return;
+
 	const slider = document.querySelector('.slider');
 	if (!slider) return;
 	slider.innerHTML = '';
@@ -354,6 +360,8 @@ function updateEventSlider() {
 }
 
 function updateVerticalContainerHeight() {
+	if (mode !== 'vertical') return;
+
 	const verticalContainer = document.getElementById('verticalEventContainer');
 	if (!verticalContainer) return;
 	
@@ -374,6 +382,8 @@ function updateVerticalContainerHeight() {
 }
 
 function updateVerticalEventBar() {
+	if (mode !== 'vertical') return;
+
 	const verticalBar = document.getElementById('verticalEventBar');
 	if (!verticalBar) return;
 	
@@ -388,7 +398,7 @@ function updateVerticalEventBar() {
 		newItem.style.transform = 'translateY(-100%)';
 		newItem.style.opacity = '0';
 		
-		if (verticalBar.children.length >= maxEvents) {
+		/*if (verticalBar.children.length >= maxEvents) {
 			const lastItem = verticalBar.lastChild;
 			
 			requestAnimationFrame(() => {
@@ -399,7 +409,14 @@ function updateVerticalEventBar() {
 					if (verticalBar.contains(lastItem)) {
 						verticalBar.removeChild(lastItem);
 					}
-				}, 500);
+				}, 1000);
+			});
+		}*/
+		while (verticalBar.children.length > (maxEvents)) {
+			const itemsToRemove = Array.from(verticalBar.children).slice(maxEvents);
+			itemsToRemove.forEach(item => {
+				item.style.opacity = '0';
+				verticalBar.removeChild(item);
 			});
 		}
 		
@@ -628,8 +645,9 @@ function updateRecentEvents(eventText) {
 	if (recentEvents.length > maxEvents) {
 		recentEvents.pop();
 	}
-	updateEventSlider();
-	updateVerticalEventBar();
+	//updateEventSlider();
+	//updateVerticalEventBar();
+	mode === 'horizontal' ? updateEventSlider() : updateVerticalEventBar();
 }
 
 // Fetch Kick chatroom and channel IDs based on username, with retry logic for underscores/dashes
