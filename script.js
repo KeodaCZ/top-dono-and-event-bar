@@ -346,6 +346,19 @@ function updateEventSlider() {
 	updateSliderAnimation();
 }
 
+function updateVerticalEventBar() {
+	const verticalBar = document.getElementById('verticalEventBar');
+	if (!verticalBar) return;
+	verticalBar.innerHTML = '';
+	
+	recentEvents.forEach(event => {
+		const eventItem = document.createElement('div');
+		eventItem.classList.add('verticalEventItem');
+		eventItem.innerText = event.text;
+		verticalBar.appendChild(eventItem);
+	});
+}
+
 function updateDonators(name, amount) {
 	if (donators[name]) {
 		donators[name] += amount;
@@ -363,8 +376,12 @@ function updateDonators(name, amount) {
 function updateTopDonator(name) {
 	topDonorName = name;
 	topDonorAmount = donators[name];
-	document.getElementById('topDonoName').innerText = topDonorName;
-	document.getElementById('topDonoAmount').innerText = topDonorAmount;
+
+	const nameElements = document.querySelectorAll('#topDonoName');
+	nameElements.forEach(el => el.innerText = topDonorName);
+
+	const amountElements = document.querySelectorAll('#topDonoAmount');
+	amountElements.forEach(el => el.innerText = topDonorAmount);
 }
 
 function StreamElementsTipHandler(data) {
