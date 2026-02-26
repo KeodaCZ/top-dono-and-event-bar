@@ -13,6 +13,7 @@
 body {
 	overflow: hidden;
     font-size: var(--fontSize);
+    margin: 10px;
 }
 
 html {
