@@ -545,6 +545,7 @@ function updateRecentEvents(eventText) {
 		recentEvents.pop();
 	}
 	updateEventSlider();
+	updateVerticalEventBar();
 }
 
 // Fetch Kick chatroom and channel IDs based on username, with retry logic for underscores/dashes
