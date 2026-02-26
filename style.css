@@ -56,7 +56,7 @@ html {
 #verticalContainer {
     display: none;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     padding: var(--padding);
     width: 100%;
@@ -73,7 +73,7 @@ html {
     padding: var(--padding);
 }
 
-#verticalEventBar {
+#horizontalEventBar {
     display: flex;
     flex-direction: row;
     align-items: center;
