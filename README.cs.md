@@ -10,7 +10,8 @@ Overlay pro streamování, který zobrazuje nejvyššího dárce a nejnovější
   - **Horizontal** - Kompaktní horizontální lišta
   - **Vertical** - Vertikální verze se scrollovací animací eventů
 - **Animace** - Eventy v vertikálním režimu se plynule scrollují zprava doleva
-- **Automatická přizpůsobení** - Rychlost animace a délka scrollu se automaticky přizpůsobují počtu eventů a délce textu
+- **Automatické přizpůsobení** - Rychlost animace a délka scrollu se automaticky přizpůsobují počtu eventů a délce textu
+- **Synchronní zpracování** - Při rychlém přibývání eventů se správně synchronizují operace pro přidávání a odebírání
 
 ## Instalace
 
@@ -25,10 +26,17 @@ Overlay lze konfigurovat pomocí URL parametrů:
 | Parametr | Popis | Default |
 |----------|-------|---------|
 | `mode` | Zobrazovací režim (`horizontal` nebo `vertical`) | `horizontal` |
-| `maxEvents` | Maximální počet zobrazených eventů | `3` |
+| `maxEvents` | Maximální počet zobrazených eventů (0 = žádné eventy) | `5` |
 | `showTopDonor` | Zobrazit top donor lištu (`true` nebo `false`) | `false` |
 | `address` | Streamer.bot server adresa | `127.0.0.1` |
 | `port` | Streamer.bot port | `8080` |
+| `size` | Velikost písma v pixelech | `21` |
+| `backgroundColor` | Barva pozadí v hex formátu (např. #000000 pro černou) (do URL se místo # použije %23) | `#000000` |
+| `backgroundOpacity` | Průhlednost pozadí jako desetinné číslo (0.0 - 1.0) | `0.5` |
+| `textColor` | Barva textu v hex formátu (např. #ffffff pro bílou) (do URL se místo # použije %23) | `#ffffff` |
+| `outlineColor` | Barva outline textu v hex formátu (např. #000000 pro černou) (do URL se místo # použije %23) | "" |
+| `outlineThickness` | Tlouška outline v pixelech | `2` |
+| `kickUsername` | Kick uživatelské jméno pro WebSocket připojení | "" |
 
 ### Příklady URL
 
@@ -42,9 +50,24 @@ index.html?mode=horizontal&maxEvents=5&showTopDonor=true
 index.html?mode=vertical
 ```
 
+**Vertikální režim s 3 eventy a černým outline 2px:**
+```
+index.html?mode=vertical&maxEvents=3&outlineColor=%23000000&outlineThickness=2
+```
+
 **Připojení k vzdálenému Streamer.bot:**
 ```
 index.html?address=192.168.1.100&port=8080
+```
+
+**Vlastní velikost písma a barvy:**
+```
+index.html?mode=vertical&size=24&backgroundColor=%231a1a1a&textColor=%2300ff00
+```
+
+**Žádné eventy (maxEvents=0):**
+```
+index.html?mode=vertical&maxEvents=0
 ```
 
 ## Streamer.bot Integrace
@@ -62,11 +85,13 @@ index.html?address=192.168.1.100&port=8080
 
 ## Animace vertikálního režimu
 
-V vertikálním režimu se eventy automaticky scrollují:
-- Text se pohybuje zprava doleva
-- Rychlost animace se vypočítá podle délky obsahu
-- Pokud se obsah vejde na obrazovku, animace se zastaví
-- Plynulý nekonečný cyklus bez trhnutí
+V vertikálním režimu se eventy plynule posouvají:
+- **Nový event** přiletí zeshora dolů s fade-in efektem
+- **Staré eventy** se automaticky posouvají na své nové pozice (díky flexboxu)
+- **Poslední event** plynule mizí, když je překročen maximální počet
+- **Container** má fixní výšku vypočítanou podle `maxEvents` (první event 1.5×, ostatní 1.3× velikosti písma)
+- **Synchronní přístup** - při rychlém přibývání eventů se počká na dokončení animací před další operací
+- **Overflow hidden** - text vyjíždí z obrazovky, když je event odstraněn
 
 ## Struktura souborů
 

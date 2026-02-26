@@ -10,7 +10,10 @@ Streaming overlay that displays the top donor and latest stream events using Str
   - **Horizontal** - Compact horizontal bar
   - **Vertical** - Vertical version with scrolling event animation
 - **Animation** - Events in vertical mode smoothly scroll from right to left
-- **Auto-adaptive** - Animation speed and scroll length automatically adjust to the number of events and text length
+- **Auto-adaptive** - Animation speed and scroll length automatically adjust to number of events and text length
+- **Synchronous Processing** - When events arrive quickly, operations are properly synchronized to prevent desync issues
+- **Text Outline** - Optional text outline with configurable color and thickness
+- **No Events Mode** - `maxEvents=0` displays no events (empty container)
 
 ## Installation
 
@@ -23,12 +26,19 @@ Streaming overlay that displays the top donor and latest stream events using Str
 The overlay can be configured using URL parameters:
 
 | Parameter | Description | Default |
-|----------|-------------|---------|
+|-----------|-------------|---------|
 | `mode` | Display mode (`horizontal` or `vertical`) | `horizontal` |
-| `maxEvents` | Maximum number of events to display | `3` |
+| `maxEvents` | Maximum number of events to display (0 = no events) | `5` |
 | `showTopDonor` | Show top donor bar (`true` or `false`) | `false` |
 | `address` | Streamer.bot server address | `127.0.0.1` |
 | `port` | Streamer.bot port | `8080` |
+| `size` | Font size in pixels | `21` |
+| `backgroundColor` | Background color in hex format (e.g., #000000 for black) (in URL, # is replaced with %23) | `#000000` |
+| `backgroundOpacity` | Background opacity as decimal (0.0 - 1.0) | `0.5` |
+| `textColor` | Text color in hex format (e.g., #ffffff for white) (in URL, # is replaced with %23) | `#ffffff` |
+| `outlineColor` | Text outline color in hex format (e.g., #000000 for black) (in URL, # is replaced with %23) | `""` (no outline) |
+| `outlineThickness` | Text outline thickness in pixels | `2` |
+| `kickUsername` | Kick username for WebSocket connection | "" |
 
 ### URL Examples
 
@@ -42,10 +52,27 @@ index.html?mode=horizontal&maxEvents=5&showTopDonor=true
 index.html?mode=vertical
 ```
 
+**Vertical mode with 3 events and black 2px outline:**
+```
+index.html?mode=vertical&maxEvents=3&outlineColor=000000&outlineThickness=2
+```
+
 **Connect to remote Streamer.bot:**
 ```
 index.html?address=192.168.1.100&port=8080
 ```
+
+**Custom font size and colors:**
+```
+index.html?mode=vertical&size=24&backgroundColor=#1a1a1a&textColor=#00ff00
+```
+
+**No events (maxEvents=0):**
+```
+index.html?mode=vertical&maxEvents=0
+```
+
+
 
 ## Streamer.bot Integration
 
@@ -62,11 +89,14 @@ index.html?address=192.168.1.100&port=8080
 
 ## Vertical Mode Animation
 
-In vertical mode, events automatically scroll:
-- Text moves from right to left
-- Animation speed is calculated based on content length
-- If content fits on screen, animation stops
-- Smooth infinite loop without jumps
+In vertical mode, events smoothly scroll:
+- **New event** slides in from top to bottom with fade-in effect
+- **Existing events** automatically shift to their new positions (due to flexbox)
+- **Last event** smoothly fades out when exceeding maximum count
+- **Container** has fixed height calculated based on `maxEvents` (first event 1.5×, others 1.3× font size)
+- **Synchronous approach** - when events arrive quickly, animation completion is awaited before next operation
+- **Overflow hidden** - text scrolls out of view when event is removed
+- **Text outline** - optional outline applied via text-shadow with configurable color and thickness
 
 ## File Structure
 
